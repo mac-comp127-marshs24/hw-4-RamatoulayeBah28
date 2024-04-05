@@ -2,52 +2,114 @@ package breakout;
 
 import edu.macalester.graphics.CanvasWindow;
 import edu.macalester.graphics.Ellipse;
-import edu.macalester.graphics.GraphicsGroup;
-import edu.macalester.graphics.Rectangle;
+import edu.macalester.graphics.GraphicsObject;
+import edu.macalester.graphics.GraphicsText;
 
 import java.awt.Color;
 
-public class Ball extends GraphicsGroup{
+public class Ball extends Ellipse{
 
-    double posX = 250;
-    double posY = 700;
-    double width = 12;
-    double height = 12;
-    double speedX = 2; // Speed in X direction
-    double speedY = 5; // Speed in Y direction
+    public static final double BALL_RADIUS = 10;
+    public double speed, velocityX, velocityY;
 
-    private static boolean animating;
+    private GraphicsObject objectHit;
 
-    public Ball(CanvasWindow canvas) {
+    public Ball(double x, double y, double speed) {
 
-        Ellipse ball = new Ellipse(posX, posY, width, height);
-        ball.setFilled(true);
-        ball.setFillColor(Color.BLACK);
-        ball.setStroked(false);
+        // Creates an Ellipse with a specified width and height based on the radius of the ball
+        super(x, y, 2 * BALL_RADIUS, 2 * BALL_RADIUS); 
+        this.setFillColor(Color.black);
 
-        animating = true;
-
-        canvas.animate(
-            () ->
-            {
-            posX += speedX;
-            posY += speedY;
-
-            // Bounce off the sides of the canvas
-            if (animating) {
-                if (posX <= 0 || posX + width >= canvas.getWidth()) {
-                    speedX = -speedX;
-                }
-
-                // Bounce off the top and bottom of the canvas
-                if (posY <= 0 || posY + height >= canvas.getHeight()) {
-                    speedY = -speedY;
-                }
-                ball.setPosition(posX, posY);
-            } else{
-                ball.setPosition(250, 700);
-            }
-        });
-        canvas.add(ball);
+        // Adjust the initial velocity based on the speed
+        velocityX = speed * 0.3; 
+        velocityY = speed * 0.3; 
+      
     }
+
+    // Check the four corner points on the square in which the ball is inscribed
+    public double getCenterX(){
+        return getX() + BALL_RADIUS;
+    }
+
+    public double getCenterY(){
+        return getY() + BALL_RADIUS;
+    }
+
+    public double getRightX(){
+        return getX() + 2 * BALL_RADIUS;
+    }
+
+    public double getBottomY(){
+        return getY() + 2 * BALL_RADIUS;
+    }
+
+    // Moves the ball on the canvas
+    public void move(CanvasWindow canvas){
+
+        if (getX() < 0){
+            velocityX = -velocityX;
+        }
+
+        if (getRightX() > canvas.getWidth()){ 
+            velocityX = -velocityX;
+        }
+
+        if (getY() < 0){
+            velocityY = -velocityY;
+        }
+
+        moveBy(velocityX, velocityY);
+        checkCollision(canvas);
+
+    }
+
+    public boolean checkBallPosition(CanvasWindow canvas){
+        if (getY() > canvas.getHeight() - 10){
+
+            return false;
+        }
+        else{
+
+            return true;
+        }
+    }
+
+    // Returns true if the ball has hit an object and if it's a brick, it destroys it. 
+    private boolean testHit(CanvasWindow canvas, double x, double y) {
+
+        objectHit = canvas.getElementAt(x, y);
+
+        if (objectHit != null && !(objectHit instanceof GraphicsText)){
+
+            if (objectHit instanceof Brick) {
+
+                canvas.remove(objectHit);
+                Brick brick = (Brick)objectHit;
+                brick.setDestroyed();
+            }
+            return true;
+        }
+        return false;
+    }
+
+    // Check if something has touched the different sides of the ball and if yes, bounce back
+    private void checkCollision(CanvasWindow canvas){
+
+        if (testHit(canvas, getX() + BALL_RADIUS, getY() - 1)){ 
+            velocityY = -velocityY;
+        }
+        
+        if(testHit(canvas, getX() + BALL_RADIUS, getY() + 2 * BALL_RADIUS + 1)){ 
+            velocityY = -velocityY;
+        }
+
+        if(testHit(canvas, getX() - 1 , getY() + BALL_RADIUS)){
+            velocityX = -velocityX;
+        }
+
+        if(testHit(canvas, getX() + 2 * BALL_RADIUS + 1 , getY() + BALL_RADIUS)){ 
+            velocityX = -velocityX;
+        }
+    }
+
 }

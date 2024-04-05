@@ -4,28 +4,16 @@ import java.awt.Color;
 
 import edu.macalester.graphics.*;
 
-public class Paddle extends GraphicsGroup {
-    double centerX = 250;
-    double centerY = 700;
-    double width = 50;
-    double height = 7;
+public class Paddle extends Rectangle {
+
+    public double centerX, centerY, width, height;
     
-
-    public Paddle(CanvasWindow canvas) {
+    // Constructor: Creates a rectangle for the paddle with a specified width, height and position
+    public Paddle(double centerX, double centerY, double width, double height) {
                         
-        Rectangle paddle = new Rectangle(centerX, centerY, width, height);
-        paddle.setFilled(true);
-        paddle.setFillColor(Color.BLACK);
-        paddle.setStroked(false);
-
-        canvas.add(paddle);
-
+        super(centerX, centerY, width, height); 
+        this.setFillColor(Color.black);
 
     }
-
-    
-
-        
-    
+ }
    
-}
