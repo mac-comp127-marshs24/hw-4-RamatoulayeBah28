@@ -1,0 +1,6 @@
+While working on this assignment, I did not look at anybody else’s solution. I used the following help and outside resources:
+
+- Java kilt-graphics documentation, HW4 Implementation Notes, stakoverflow
+- Preceptors and classmates
+
+Ramatoulaye Bah
